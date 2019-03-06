@@ -1,23 +1,23 @@
-# import itertools
-# import pulp
+# Attack best response to randomized defense
 
-# number of districts
+
+# number of districts, i in range(n)
 n = 3
 
-# number of strategies
+# number of strategies, j in range(m)
 m = 3
 
-# t_i^(c-w); vote diffs; winners:[w, c, w]; goal: flip total vote to c
-t = [-100, 50, -15]
+# t_i^(c-w); vote diffs; winners:[c, c, w]; goal: flip total vote to c
+t = [100, 50, -1500]
 
-# S: S_1 = {s_1, s_2, s_3}
+# S: S[j] = defense strategy j; S[j][i] = whether district i is defended under strategy j
 S = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 
-# x_s: probability of defender choosing each strategy S.
-x = [.5, .25, .25]
+# x: probability of defender choosing each strategy s.
+x = [.2, .2, .6]
 
 # max_attacks
-k = 2
+k = 1
                         
 
 import docplex.mp.model as cpx
@@ -28,17 +28,32 @@ a = { i : model.binary_var(name="a_" + str(i)) for i in range(n) }
 
 z = { j : model.binary_var(name="z_" + str(j)) for j in range(m) }
 
-model.add_constraint( ct=model.sum( a[i] for i in range(n)) <= k )
+v = { (i,j) : model.binary_var(name="v_" + str(i) + "_" + str(j)) for i in range(n) for j in range(m) }
+
+
+
+model.add_constraint( model.sum( a[i] for i in range(n)) <= k )
+
+# for j in range(m):
+#     s = S[j]
+#     model.add_constraint( model.sum( z[j] * t[i] * (1 - s[i]) * a[i] for i in range(n)) >= 0 )
 
 for j in range(m):
     s = S[j]
-    model.add_constraint( ct=model.sum( z[i] * t[i] * (1 - s[i]) * a[i] for i in range(n)) >= 0 ) 
+    model.add_constraint( model.sum( z[j] * t[i] - (1 - s[i]) * v[i,j] * t[i] for i in range(n) ) >= 0 )
 
-objective = model.sum( (1 - z[j]) * x[j] for j in range(m))
+for i in range(n):
+    for j in range(m):
+        model.add_constraint( v[i,j] <= z[j] )
+        model.add_constraint( v[i,j] <= a[i] )
+        model.add_constraint( v[i,j] >= z[j] + a[i] - 1 )
+
+objective = model.sum( (1 - z[j]) * x[j] for j in range(m) )
 
 model.minimize(objective)
 
 model.print_information()
+print()
 
 model.solve()
 
@@ -46,18 +61,23 @@ print("Objective value: ", model.objective_value, "\n")
 
 print("Attack group(s):", end=' ')
 for i in range(n):
-    v = int(a[i])
-    if v:
+    value = int(a[i])
+    if value:
         print(i, end=' ')
     
 print("\n")
 
 for j in range(m):
-    v = int(z[j])
-    print(str(z[j]) + " = " + str(v))
+    value = int(z[j])
+    print(str(z[j]) + " = " + str(value))
     
-
-print(model.sum( z[j] * t[i] * (1 - s[i]) * a[i] for i in range(n)))
+for i in range(n):
+    for j in range(m):
+        value = int(v[i,j])
+        print(str(v[i,j]) + " = " + str(value))
+#
+#
+# print(model.sum( z[j] * t[i] * (1 - s[i]) * a[i] for i in range(n)))
 
 
 
