@@ -1,0 +1,70 @@
+\def\year{2018}\relax
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article} %DO NOT CHANGE THIS
+\usepackage{aaai18}  %Required
+\usepackage{times}  %Required
+\usepackage{helvet}  %Required
+\usepackage{courier}  %Required
+\usepackage{url}  %Required
+\usepackage{graphicx}  %Required
+\frenchspacing  %Required
+\setlength{\pdfpagewidth}{8.5in}  %Required
+\setlength{\pdfpageheight}{11in}  %Required
+%PDF Info Is Required:
+  \pdfinfo{
+/Title (2018 Formatting Instructions for Authors Using LaTeX)
+/Author (AAAI Press Staff)}
+\setcounter{secnumdepth}{0}  
+ \begin{document}
+% The file aaai.sty is the style file for AAAI Press 
+% proceedings, working notes, and technical reports.
+%
+\title{Election Control: Attacking and Defending\\ Elections using Linear Programming}
+\author{Trevor Larsen and Zach Mekus\\
+Washington University in St. Louis
+}
+\maketitle
+\begin{abstract}
+For our project, we are doing an implementation of the paper Optimal Defense Against Election Control by Deleting Vote Groups by Yin et. al. The paper introduces a double oracle approach for solving the optimization problem of how to deploy defense resources to defend an election. We are implementing this double oracle algorithm, and expanding on it by applying it to each state in the 2016 election, and propose a heuristic to decide which states to attack to optimize the probability of winning a national election using the electoral college system. Current accomplishments include implenting the Attacker-MILP and Defender-MILP functions, as well as devising the heuristic we will use for maximizing probability of success over all states in an election.
+\end{abstract}
+
+\section{Introduction}
+\subsection{The Problem}
+In recent centuries, the majority of governments in the world have shifted to forms of government that rely on elections. In order for democratic institutions to maintain their integrity, these elections must be both free and fair, as well as protected from outside interference. Malicious attackers may have motivation to influence the outcome of an election in a certain direction by subverting the democratic process. Examples of this include attacks on voting day in 2013 in Pakistan, where bombings killed or injured over 150 people, as well as in 2010 Sri Lanka elections where there were over 250 incidents of poll-related violence. Cyber attacks on electronic voter systems are also a threat, and while no known attacks have been discovered, these may prove to be targets in the future, as recent ivestigations have found these systems to be vulnerable. 
+\subsection{Related Work}
+The Optimal Defense paper examines the problem of protecting elections against subversion by abstracting the process of enhancing security at voting locations, either physically or electronically. Prior work included Bartholdi et al. which looked at the problem from the point of view of computational complexity. Prior literature has considered elections resistant if control is NP-hard, and
+\subsection{Current Accomplishments}
+
+\section{Model}
+\subsection{Stackelberg Game}
+Yin et al. model the election as a stackelberg game. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend,  with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). 
+\section{Algorithm}
+\subsection{Core-LP}
+\subsection{Attack-MILP}
+\subsection{Defense-MILP}
+\subsection{AO-Better}
+\subsection{DO-Better}
+
+
+\section{Results/Evaluation}
+
+\section{Related Work}
+
+\section{Conclusion, Limitations, and Future Work}
+
+
+\begin{quote}
+\begin{scriptsize}\begin{verbatim}
+%References and End of Paper
+%These lines must be placed at the end of your paper
+\bibliography{Bibliography-File}
+\bibliographystyle{aaai}
+\end{document}
+\end{verbatim}\end{scriptsize}
+\end{quote}
+
+
+
+
+
+\end{document}
