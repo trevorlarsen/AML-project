@@ -30,18 +30,32 @@ For our project, we are doing an implementation of the paper Optimal Defense Aga
 
 \section{Introduction}
 \subsection{The Problem}
+
 In recent centuries, the majority of governments in the world have shifted to forms of government that rely on elections. In order for democratic institutions to maintain their integrity, these elections must be both free and fair, as well as protected from outside interference. Malicious attackers may have motivation to influence the outcome of an election in a certain direction by subverting the democratic process. Examples of this include attacks on voting day in 2013 in Pakistan, where bombings killed or injured over 150 people, as well as in 2010 Sri Lanka elections where there were over 250 incidents of poll-related violence. Cyber attacks on electronic voter systems are also a threat, and while no known attacks have been  in the United States, these may prove to be targets in the future, as recent investigations have found these systems to be vulnerable. 
+
+An attacker can attack an election with the goal of either making a certain candidate the winner, which we refer to as constructive control, or to prevent a certain candidate from winning, which we call destructive control. We are interesed in the specific example of the United States presidential election, in which we will only consider the Democratic and Republican parties. In this case, making one candidate win is equivalent to making the other candidate lose, so constructive and destructive control are equivalent. In this project, we wish to investigate how we can model an attack or defense of a national presidential election in the United States, using data from the 2016 United States presidential election.
+
 \subsection{Related Work}
 
 The first set of prior work we will look at is papers regarding election control. The Optimal Defense paper examines the problem of protecting elections against subversion by abstracting the process of enhancing security at voting locations, either physically or electronically. Prior work included Bartholdi et al. which looked at the problem from the point of view of computational (2015) were the first to look at election control at the level of voter groups, and grouped voters by a bundling function. In the paper of Yin et al. used a function where voting groups did not overlap, and where given voting groups were deleted by the advsersary. Erdélyi et al. added or deleted voter groups in his study, but only considered constructive control.  Yin et al. in this paper was the first to consider methods for allocating defense resources for protecting given locations in an election. Elkind and Lipmaa try to make elections more difficult to subvert by developing rules that are NP-hard to manipulate, which is different from this paper, which looks at using defensive resources to reduce likelihood of an adversary changing the out come by attacking groups.
 
-Next we will look at papers regarding physical security problems using Stackelberg games. Prior work has looked at the problem of attackers being limited to one location, whereas in Yin et al.the attackers attack multiple locations simultaneously. Other prior work has looked at simultaneous move games or have only used heuristic approaches.
+Next we will look at papers regarding physical security problems using Stackelberg games. Prior work has looked at the problem of attackers being limited to one location, whereas in Yin et al.the attackers attack multiple locations simultaneously. Other prior work has looked at simultaneous move games or have only used heuristic approaches. Other Stackelberg games have used double oracle solutions in the past, but the unique formulation of this problem requires a unique algorithm to find an optimal solution.
 
 \subsection{Current Accomplishments}
 **Zach give a short paragraph overview of current accomplishments here.**
 
 \section{Model}
 \subsection{Stackelberg Game Background}
+In the following section, we introduce the concept of a Stacklberg game, which we will use in the model for our election control problem. A Stackelberg game consists of two players, a leader and a follower, who each decide on a strategy for the game. The leader goes first, picking a strategy, and the follower responds with a strategy. The strategies used can either be pure strategies, where players commit to a particular action, or a mixed strategy, where players choose a probability distribution over pure strategies. A Stackelberg security game is a model for an interaction between a defending security force and an adverserial attacker. In a Stackelberg security game, because the attacker picks second, they always are able to pick the action that gives them the highest probability of success due to their knowledge of the defender's strategy, and thus will always pick a pure strategy. In contrast, the defender doesn't have any such commitment from the attacker, and usually chooses a mixed strategy to minimize the attacker's probability of success, since the defender knows the attacker will exploit any weaknesses the defender leaves in his strategy. 
+
+Given a defender's mixed strategy $P$ over pure strategies in $S$, $P = \{p(s) : s \in S\}$ and an attacker's action $a$ we can calculate the utility of the defender:
+
+\begin{equation}
+u^D(P,a) = \sum_{s \in S}p(s)U^D(s,a)
+\end{equation}
+\begin{equation}
+u^A(P,a) = \sum_{s \in S}p(s)U^A(s,a)
+\end{equation}
 
 \subsection{Model of the Election}
 Yin et al. model the election as a stackelberg game. The election cosists of people voting at different locations. At each location, each candidate receives a certain number of votes. Attacks are modeled as a deletion of the votes at these locations. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend,  with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). 
