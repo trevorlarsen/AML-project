@@ -33,17 +33,26 @@ For our project, we are doing an implementation of the paper Optimal Defense Aga
 In recent centuries, the majority of governments in the world have shifted to forms of government that rely on elections. In order for democratic institutions to maintain their integrity, these elections must be both free and fair, as well as protected from outside interference. Malicious attackers may have motivation to influence the outcome of an election in a certain direction by subverting the democratic process. Examples of this include attacks on voting day in 2013 in Pakistan, where bombings killed or injured over 150 people, as well as in 2010 Sri Lanka elections where there were over 250 incidents of poll-related violence. Cyber attacks on electronic voter systems are also a threat, and while no known attacks have been  in the United States, these may prove to be targets in the future, as recent investigations have found these systems to be vulnerable. 
 \subsection{Related Work}
 
-The first set of prior work we will look at is papers regarding election control. The Optimal Defense paper examines the problem of protecting elections against subversion by abstracting the process of enhancing security at voting locations, either physically or electronically. Prior work included Bartholdi et al. which looked at the problem from the point of view of computational (2015) were the first to look at election control at the level of voter groups, and grouped voters by a bundling function. In the paper of Yin et al. used a function where voting groups did not overlap, and where given voting groups were deleted by the advsersary. Erdélyi et al. added or deleted voter groups in his study, but only considered constructive control.  Yin et al. in this paper was the first to consider methods for allocating defense resources for protecting given locations in an election.
+The first set of prior work we will look at is papers regarding election control. The Optimal Defense paper examines the problem of protecting elections against subversion by abstracting the process of enhancing security at voting locations, either physically or electronically. Prior work included Bartholdi et al. which looked at the problem from the point of view of computational (2015) were the first to look at election control at the level of voter groups, and grouped voters by a bundling function. In the paper of Yin et al. used a function where voting groups did not overlap, and where given voting groups were deleted by the advsersary. Erdélyi et al. added or deleted voter groups in his study, but only considered constructive control.  Yin et al. in this paper was the first to consider methods for allocating defense resources for protecting given locations in an election. Elkind and Lipmaa try to make elections more difficult to subvert by developing rules that are NP-hard to manipulate, which is different from this paper, which looks at using defensive resources to reduce likelihood of an adversary changing the out come by attacking groups.
 
-Next we will look at papers regarding physical security problems using Stackelberg games.
+Next we will look at papers regarding physical security problems using Stackelberg games. Prior work has looked at the problem of attackers being limited to one location, whereas in Yin et al.the attackers attack multiple locations simultaneously. Other prior work has looked at simultaneous move games or have only used heuristic approaches.
+
 \subsection{Current Accomplishments}
+**Zach give a short paragraph overview of current accomplishments here.**
 
 \section{Model}
-\subsection{Stackelberg Game}
+\subsection{Stackelberg Game Background}
+
+\subsection{Model of the Election}
 Yin et al. model the election as a stackelberg game. The election cosists of people voting at different locations. At each location, each candidate receives a certain number of votes. Attacks are modeled as a deletion of the votes at these locations. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend,  with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). 
 \section{Algorithm}
+Below is the general algorithm that Yin et. al suggest.
 \subsection{Core-LP}
 \subsection{Attack-MILP}
+Yin et al. propose the following linear programming problem to solve for the attacker's optimal action given a set of potential actions and defender weak strategies.
+
+**I think we should include the original linear program, as well as the modified constraints we used for the 2 candidate scenario.
+
 \subsection{Defense-MILP}
 \subsection{AO-Better}
 \subsection{DO-Better}
