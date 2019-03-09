@@ -46,9 +46,9 @@ Next we will look at papers regarding physical security problems using Stackelbe
 
 \section{Model}
 \subsection{Stackelberg Game Background}
-In the following section, we introduce the concept of a Stacklberg game, which we will use in the model for our election control problem. A Stackelberg game consists of two players, a leader and a follower, who each decide on a strategy for the game. The leader goes first, picking a strategy, and the follower responds with a strategy. The strategies used can either be pure strategies, where players commit to a particular action, or a mixed strategy, where players choose a probability distribution over pure strategies. A Stackelberg security game is a model for an interaction between a defending security force and an adverserial attacker. In a Stackelberg security game, because the attacker picks second, they always are able to pick the action that gives them the highest probability of success due to their knowledge of the defender's strategy, and thus will always pick a pure strategy. In contrast, the defender doesn't have any such commitment from the attacker, and usually chooses a mixed strategy to minimize the attacker's probability of success, since the defender knows the attacker will exploit any weaknesses the defender leaves in his strategy. 
+In the following section, we introduce the concept of a Stackelberg game, which we will use in the model for our election control problem. A Stackelberg game consists of two players, a leader and a follower, who each decide on a strategy for the game. The leader goes first, picking a strategy, and the follower responds with a strategy. The strategies used can either be pure strategies, where players commit to a particular action, or a mixed strategy, where players choose a probability distribution over pure strategies. A Stackelberg security game is a model for an interaction between a defending security force and an adverserial attacker. In a Stackelberg security game, because the attacker picks second, they always are able to pick the action that gives them the highest probability of success due to their knowledge of the defender's strategy, and thus will always pick a pure strategy. In contrast, the defender doesn't have any such commitment from the attacker, and usually chooses a mixed strategy to minimize the attacker's probability of success, since the defender knows the attacker will exploit any weaknesses the defender leaves in his strategy. 
 
-Given a defender's mixed strategy $P$ over pure strategies in $S$, $P = \{p(s) : s \in S\}$ and an attacker's action $a$ we can calculate the utility of the defender:
+Let S be the set of all defender pure strategies, and A be the set of all attacker strategies. Given a defender's mixed strategy $P$ over pure strategies in $S$, $P = \{p(s) : s \in S\}$, where $p(s)$ is the probability of choosing strategy s, an attacker's action $a \in A$, and utility payoff functions for the defender $U^D(s,a)$ and attacker $U^A(s,a)$ for given pure strategy $(s,a)$ pairs we can calculate the utility of the defender and attacker:
 
 \begin{equation}
 u^D(P,a) = \sum_{s \in S}p(s)U^D(s,a)
@@ -57,26 +57,74 @@ u^D(P,a) = \sum_{s \in S}p(s)U^D(s,a)
 u^A(P,a) = \sum_{s \in S}p(s)U^A(s,a)
 \end{equation}
 
-\subsection{Model of the Election}
-Yin et al. model the election as a stackelberg game. The election cosists of people voting at different locations. At each location, each candidate receives a certain number of votes. Attacks are modeled as a deletion of the votes at these locations. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend,  with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). 
-\section{Algorithm}
-Below is the general algorithm that Yin et. al suggest.
-\subsection{Core-LP}
-\subsection{Attack-MILP}
-Yin et al. propose the following linear programming problem to solve for the attacker's optimal action given a set of potential actions and defender weak strategies.
+let $br(P) \mapsto a$ be a function mapping a mixed strategy to the attacker's best response a. For a given mixed strategy, action pair (P,br(P)) to be a Strong Stackelberg Equilibrium it must fullfill the following criteria: 
 
-**I think we should include the original linear program, as well as the modified constraints we used for the 2 candidate scenario.
+\begin{itemize}
+\item $U^D(P,a) \geq U^D(P*,br(P*))$ for any other P*.
+\item The attacker's response $br(P) \in argmax_{a \in A}u^A(P,a)$
+\item defender wins ties $U^D(P,br(P)) \geq U^D(P,a), \forall a \in argmax_{a \in A}u^A(P,a)$
+\end{itemize}
+
+\subsection{Model of the Election}
+Yin et al. model the election as a Stackelberg security game. The election cosists of people voting at different locations. At each location, each candidate receives a certain number of votes. Attacks are modeled as a deletion of the votes at these locations. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend, with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). In our case, since we are modelling the US presidential election and are only considering the Republican and Democratic party candidates, we are treating the destructive and construct control cases as the same, as they become the same problem in a 2 party-election. We model each state as being an independent election composed of the districts in each state, using data compiled by Daily Kos. For simplicty, we only consider Democratic and Republican vote tallies, and use as input to the algorithm the difference in vote tallys for each district. Each state has $D_n$ defender resources that it may allocate to defend the result of the election, while the attacker has $A_n$ attacker resources to consider to flip the result of the election in that state. Finally, we model the national problem in the national election of having the attacker only being allowed to attack a subset of size k states. 
+\section{Algorithm}
+
+In order to solve this problem, we solve a linear program which we will call Core-LP. This Core-LP takes as input the set of strategies to consider for both the attacker and the defender, as well as the vote tally difference in each district. Given these strategies and vote tallys, Core-LP computes **ZACH FILL IN MORE**
+
+Core-LP has issues with scalability, as computational time grows exponentially with the number of strategies for both the attacker and the defender. Thus, for sufficiently large elections, this linear programming approach on its own will become intractable. In their paper, Yin et al. propose a double oracle approach to solve for optimal defense and attack strategies, using heuristics to slowly grow the number of cosidered strategies. This approach involves the use of several problem-agonstic functions which must be specified for a given problem. These algorithms are the Attack-MILP,Defense-MILP,AO-Better and DO-Better functions. We will cover how each of these functions work individually in our case. We present the double oracle approach in Figure \ref{fig:doubleoracle}. In each iteration, the approach adds new best response pure stratgies for both the attacker and the defender to the list of considered strategies by executing AO-Better and DO-Better. If either AO-Better or DO-Better is unable to find an improved strategy, they pass off work to Attack-MILP or Defense-MILP respectively, which will return a pure strategy for the attackers and defenders to consider in the Core-LP.  Once the approach is unable to find new strategies that improve upon the current set of strategies and actions, the approach terminates, returning the mixed strategy calculated by Core-LP for the defender. 
+
+\begin{figure*}[!h]
+  \centering
+  \includegraphics[height=10em]{doubleoracle.jpg}
+  \caption{The double oracle algorithm proposed by Yin et al.}
+  \label{fig:doubleoracle}
+\end{figure*}
+
+\subsection{Attack-MILP}
+In this section we describe our modified version of the Attack-MILP Linear Program that we developed for the 2-candidate scenario. Attack-MILP takes as input a mixed strategy generated by Core-LP. The Linear Program is given below.
+Let $x_j$ be the probability of the jth strategy being played. Let $a_i$ be 1 if action i is taken, and 0 otherwise. Let $t_i$ be the difference in vote count for district i. $z_j$ is 1 if the attacker will win against pure defense strategy j. $v_{ij}$ is a linearization variable that is 1 if district i is attacked with defense j, and will win the attack, and is calculated as $v_{ij} = a_iz_j$. $S_{ij}$ denotes whether districted i is defended in strategy j. k is the maximum number of attacks the attacker may execute. 
+
+Attack-MILP seeks to minimize the objective function:
+\begin{equation}
+min_{a_i,z_j,v_{ij} \in \{0,1\}}\sum_{j}(1-z_{j})x_j \\
+\end{equation}
+subject to the following constraints:
+\begin{equation}
+\sum_{i}a_{i} \leq k
+\end{equation}
+\begin{equation}
+\sum_{i}(z_jt_i-(1-S_{ij})v_{ij}t_i) \geq 0 \forall j
+\end{equation}
+\begin{equation}
+v_{ij} \leq z_j \forall i,j
+\end{equation}
+\begin{equation}
+v_{ij} \leq a_i \forall i,j
+\end{equation}
+\begin{equation}
+v_{ij} \geq z_j+a_i-1 \forall i,j
+\end{equation}
+
 
 \subsection{Defense-MILP}
 \subsection{AO-Better}
 \subsection{DO-Better}
 
+\subsection{National Election}
+Like the AO-Better and DO-Better functions, we have yet to implement the National Election heuristic for our project, but we already have our heuristic for choosing states in mind. Recall that using the double oracle approach we are able to calculate a probability of flipping each state to a given party. In the U.S. presidential election the goal is to win the majority, which is 270, of the electoral college votes. Each state is assigned a number of electoral college votes in each election. Our heuristic is straightforward. If the attacker wants to win the election for a particular candidate, he should maximize the expected number of votes that candidate will achieve. Thus, our heuristic is to take the number of electoral votes $EV_n$ in each state, and multiply this by the probability of winning the state given by the double oracle approach in that state PW(n). 
+
+\begin{equation}
+E[EV] = EV_n*PW(n)
+\end{equation}
+
+We then sort the states by E[EV] and select the k largest values. We will include the results of this approach in our final report.
 
 \section{Results/Evaluation}
 
 \section{Related Work}
 
 \section{Conclusion, Limitations, and Future Work}
+In summary, our project is well on the way to completition. Our Implementations of the Core-LP, Attack-MILP and Defense-MILP are working as expected. One limitation of the approach we have taken is that runtime can still be prohibitive for states with many districts. Additionally districts are a poor representation of voting units since a district has many counties within it, and counties have many voting centers within them. Analyzing group voting at the level of voting centers is far more realistic, though computationally much more porhibitive. Additionally, it is difficult to find voting data at the level of individual voting centers. Counties are also too numerous to be computationally tractable for a project with our computational resources. Future work for this project will include finishing the implementation of the double-oracle approach by completing AO-Better and DO-Better, and implementing our heuristic at the national election level. Finally, we also need to compare the results of our finished work to those produced by Yin et al.
 
 
 \begin{quote}
