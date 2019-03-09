@@ -74,7 +74,62 @@ Yin et al. propose the following linear programming problem to solve for the att
 
 \section{Results/Evaluation}
 
+\begin{figure}
+    \includegraphics[width=\linewidth]{michigan_votes}
+    \label{michigan_votes}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{michigan_probs}
+    \label{michigan_probs}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{michigan_oracles}
+    \label{michigan_oracles}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{michigan_perfs}
+    \label{michigan_perfs}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{georgia_votes}
+    \label{georgia_votes}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{georgia_probs}
+    \label{georgia_probs}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{georgia_oracles}
+    \label{georgia_oracles}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{georgia_perfs}
+    \label{georgia_perfs}
+\end{figure}
+
+\subsection{Overview}
+
+The results section has the following goals: To show that what has been implemented so far is correct, to get an initial evaluation of our states data, and to gage the limitations of Core LP in terms of run time on further state data. We evaluate on 2016 US presidential election data using the difference in votes between Hillary Clinton and Donald Trump each congressional district of the states Michigan and Georgia. The optimal randomized defensive strategy is solved using Core LP and the dual solution of Core LP is the optimal randomized attacking strategy for the scenario where the attacker moves first and the defender plays a pure strategy. AOMILP and DOMILP work by taking randomized strategies and returning the optimal attacking and defending strategy respectively. To ensure these will work later on in the double oracle, these are tested here to make sure they give correct strategies and objective values. The probability vectors over the districts are calculated by finding the expectation that each district will be defended or attacked based on the randomized strategy.
+
+\subsection{Michigan}
+
+In 2016 the presidential election results went narrowly to Donald Trump. If any district that favored Trump is deleted, the results would have changed. Here we use three defenders and two attackers, but the results would have been similar no matter what. Since every district is equally valuable, the defenders and attackers pretect them equally. Table \ref{michigan_probs} shows the equal distribution among districts the defender won, in both the attacking and defending solutions (defending sums to 3, attacking sums to 2). This is also seen in the response in table \ref{michigan_oracles} by the attacker and defender, which arbitrarily choose districts among those the defender won. 
+
+\subsection{Georgia}
+
+While Georgia was competitive, it wasn't so close that any To induce a more interesting result, 3 defenders and 5 attackers were introduced and this resulted in a 29\% chance of defending successfully. As seen in table \ref{georgia_probs} the larger defender-won districts got more defense and attack. Because the attackers had more options, they could sometimes attack districts never defended. Table \ref{georgia_oracles} shows that each of the oracles corresponds to choosing the most attacked/defended districts, but not neccessarily the ones with the most votes to destroy. 
+
+
 \section{Related Work}
+
+We experiment on the same data as Yin et al. with 2016 Michigan presidential data. With the same settings, three defense and two attack resources, we both get the same result of .29 success rate. This is promising as it serves as further confirmation that we have implemented Core LP corectly. In the Results section, we expand on the choices made by the defensive and attacking agents in Michigan and Georgia to further understand the process. In the future, we hope to expand on the solving this problem for all states. 
 
 \section{Conclusion, Limitations, and Future Work}
 
