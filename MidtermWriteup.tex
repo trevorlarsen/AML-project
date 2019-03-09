@@ -42,7 +42,7 @@ The first set of prior work we will look at is papers regarding election control
 Next we will look at papers regarding physical security problems using Stackelberg games. Prior work has looked at the problem of attackers being limited to one location, whereas in Yin et al.the attackers attack multiple locations simultaneously. Other prior work has looked at simultaneous move games or have only used heuristic approaches. Other Stackelberg games have used double oracle solutions in the past, but the unique formulation of this problem requires a unique algorithm to find an optimal solution.
 
 \subsection{Current Accomplishments}
-**Zach give a short paragraph overview of current accomplishments here.**
+We have coded and tested Core LP, AOMILP, and DOMILP, and tested it on 2016 US presidential election data for two states. We have also devised our heuristic for combining state level results to get the probability of an attacker winning the electoral college. 
 
 \section{Model}
 \subsection{Stackelberg Game Background}
@@ -69,9 +69,9 @@ let $br(P) \mapsto a$ be a function mapping a mixed strategy to the attacker's b
 Yin et al. model the election as a Stackelberg security game. The election cosists of people voting at different locations. At each location, each candidate receives a certain number of votes. Attacks are modeled as a deletion of the votes at these locations. In this model for the election, the defender is the leader, and first chooses a mixed strategy over m locations to defend, with the goal of defending the outcome of the election. The attacker follows with a pure strategy, choosing which n locations to attack, trying to change the result of the election, either with the goal of having a specific candidate win (constructive control) or making a particular candidate lose (destructive control). In our case, since we are modelling the US presidential election and are only considering the Republican and Democratic party candidates, we are treating the destructive and construct control cases as the same, as they become the same problem in a 2 party-election. We model each state as being an independent election composed of the districts in each state, using data compiled by Daily Kos. For simplicty, we only consider Democratic and Republican vote tallies, and use as input to the algorithm the difference in vote tallys for each district. Each state has $D_n$ defender resources that it may allocate to defend the result of the election, while the attacker has $A_n$ attacker resources to consider to flip the result of the election in that state. Finally, we model the national problem in the national election of having the attacker only being allowed to attack a subset of size k states. 
 \section{Algorithm}
 
-In order to solve this problem, we solve a linear program which we will call Core-LP. This Core-LP takes as input the set of strategies to consider for both the attacker and the defender, as well as the vote tally difference in each district. Given these strategies and vote tallys, Core-LP computes **ZACH FILL IN MORE**
+In order to solve this problem, we solve a linear program which we will call Core-LP. This Core-LP takes as input the set of strategies to consider for both the attacker and the defender, as well as the vote tally difference in each district. Given these strategies and vote tallys, Core-LP computes the best defensive strategy against a following attacker, and by virtue of the dual solution, the best attacking strategy against a following defender. 
 
-Core-LP has issues with scalability, as computational time grows exponentially with the number of strategies for both the attacker and the defender. Thus, for sufficiently large elections, this linear programming approach on its own will become intractable. In their paper, Yin et al. propose a double oracle approach to solve for optimal defense and attack strategies, using heuristics to slowly grow the number of cosidered strategies. This approach involves the use of several problem-agonstic functions which must be specified for a given problem. These algorithms are the Attack-MILP,Defense-MILP,AO-Better and DO-Better functions. We will cover how each of these functions work individually in our case. We present the double oracle approach in Figure \ref{fig:doubleoracle}. In each iteration, the approach adds new best response pure stratgies for both the attacker and the defender to the list of considered strategies by executing AO-Better and DO-Better. If either AO-Better or DO-Better is unable to find an improved strategy, they pass off work to Attack-MILP or Defense-MILP respectively, which will return a pure strategy for the attackers and defenders to consider in the Core-LP.  Once the approach is unable to find new strategies that improve upon the current set of strategies and actions, the approach terminates, returning the mixed strategy calculated by Core-LP for the defender. 
+Core-LP has issues with scalability, as computational time grows exponentially with the number of strategies for both the attacker and the defender. Thus, for sufficiently large elections, this linear programming approach on its own will become intractable. In their paper, Yin et al. propose a double oracle approach to solve for optimal defense and attack strategies, using heuristics to slowly grow the number of cosidered strategies. This approach involves the use of several problem-agonstic functions which must be specified for a given problem. These algorithms are the Attack-MILP,Defense-MILP,AO-Better and DO-Better functions. We cover the implementation of the functions we have implemented so far. We present the double oracle approach in Figure \ref{fig:doubleoracle}. In each iteration, the approach adds new best response pure stratgies for both the attacker and the defender to the list of considered strategies by executing AO-Better and DO-Better. If either AO-Better or DO-Better is unable to find an improved strategy, they pass off work to Attack-MILP or Defense-MILP respectively, which will return a pure strategy for the attackers and defenders to consider in the Core-LP. Once the approach is unable to find new strategies that improve upon the current set of strategies and actions, the approach terminates, returning the mixed strategy calculated by Core-LP for the defender. 
 
 \begin{figure*}[!h]
   \centering
@@ -81,8 +81,8 @@ Core-LP has issues with scalability, as computational time grows exponentially w
 \end{figure*}
 
 \subsection{Attack-MILP}
-In this section we describe our modified version of the Attack-MILP Linear Program that we developed for the 2-candidate scenario. Attack-MILP takes as input a mixed strategy generated by Core-LP. The Linear Program is given below.
-Let $x_j$ be the probability of the jth strategy being played. Let $a_i$ be 1 if action i is taken, and 0 otherwise. Let $t_i$ be the difference in vote count for district i. $z_j$ is 1 if the attacker will win against pure defense strategy j. $v_{ij}$ is a linearization variable that is 1 if district i is attacked with defense j, and will win the attack, and is calculated as $v_{ij} = a_iz_j$. $S_{ij}$ denotes whether districted i is defended in strategy j. k is the maximum number of attacks the attacker may execute. 
+In this section we describe our modified version of the Attack-MILP Linear Program that we developed for the 2-candidate scenario. In this version, we explicitly write out the linear version of the optimization problem in the original paper and removed variables that aren't relevant in a 2-candidate scenario. Attack-MILP takes as input a mixed defense strategy generated by Core-LP. The Linear Program is given below.
+Let $x_j$ be the probability of the jth defensive strategy being played. Let $a_i$ be 1 if attack action i is taken, and 0 otherwise. Let $t_i$ be the difference in vote count for district i. $z_j$ is 1 if the attacker will win against pure defense strategy j. $v_{ij}$ is a linearization variable that is 1 if district i is attacked with defense j, and will win the attack, and is calculated as $v_{ij} = a_iz_j$. $S_{ij}$ denotes whether district i is defended in strategy j. k is the maximum number of attacks the attacker may execute. 
 
 Attack-MILP seeks to minimize the objective function:
 \begin{equation}
@@ -107,8 +107,29 @@ v_{ij} \geq z_j+a_i-1 \forall i,j
 
 
 \subsection{Defense-MILP}
-\subsection{AO-Better}
-\subsection{DO-Better}
+
+Let $y_j$ be the probability of the jth attack strategy being played. Let $s_i$ be 1 if defensize action i is taken, and 0 otherwise. Let $t_i$ be the difference in vote count for district i. $z_j$ is 1 if the defender will win against pure attack strategy j. $v_{ij}$ is a linearization variable that is 1 if district i is defended with attack j, and will win the defense, and is calculated as $v_{ij} = s_iz_j$. $A_{ij}$ denotes whether district i is attacked in strategy j. $l$ is the maximum number of attacks the attacker may execute. 
+Defense-MILP seeks to maximize the objective function:
+\begin{equation}
+max_{s_i,z_j,v_{ij} \in \{0,1\}}\sum_{j}z_{j}y_j \\
+\end{equation}
+subject to the following constraints:
+\begin{equation}
+\sum_{i}s_{i} \leq l
+\end{equation}
+\begin{equation}
+\sum_{i}(z_jt_i(1-A_{ij}) + v_{ij}t_iA_{ij} + z_j \leq 0 \forall j
+\end{equation}
+\begin{equation}
+v_{ij} \leq z_j \forall i,j
+\end{equation}
+\begin{equation}
+v_{ij} \leq s_i \forall i,j
+\end{equation}
+\begin{equation}
+v_{ij} \geq z_j+s_i-1 \forall i,j
+\end{equation}
+
 
 \subsection{National Election}
 Like the AO-Better and DO-Better functions, we have yet to implement the National Election heuristic for our project, but we already have our heuristic for choosing states in mind. Recall that using the double oracle approach we are able to calculate a probability of flipping each state to a given party. In the U.S. presidential election the goal is to win the majority, which is 270, of the electoral college votes. Each state is assigned a number of electoral college votes in each election. Our heuristic is straightforward. If the attacker wants to win the election for a particular candidate, he should maximize the expected number of votes that candidate will achieve. Thus, our heuristic is to take the number of electoral votes $EV_n$ in each state, and multiply this by the probability of winning the state given by the double oracle approach in that state PW(n). 
@@ -173,6 +194,10 @@ In 2016 the presidential election results went narrowly to Donald Trump. If any 
 
 While Georgia was competitive, it wasn't so close that any To induce a more interesting result, 3 defenders and 5 attackers were introduced and this resulted in a 29\% chance of defending successfully. As seen in table \ref{georgia_probs} the larger defender-won districts got more defense and attack. Because the attackers had more options, they could sometimes attack districts never defended. Table \ref{georgia_oracles} shows that each of the oracles corresponds to choosing the most attacked/defended districts, but not neccessarily the ones with the most votes to destroy. 
 
+\subsection{Results Conclusion}
+
+The two oracles AOMILP and DOMILP appear to have performed correctly, especially by getting the same optimal value as Core LP. As expected, with more defender and attacker strategies, the optimizations of Georgia took longer to compute. This certainly seems to be a limitation on the future of using Core LP on larger states or using lower level districts like counties. Our next step will be replicating the double oracle algorithm to avoid this. 
+
 
 \section{Related Work}
 
@@ -180,17 +205,6 @@ We experiment on the same data as Yin et al. with 2016 Michigan presidential dat
 
 \section{Conclusion, Limitations, and Future Work}
 In summary, our project is well on the way to completition. Our Implementations of the Core-LP, Attack-MILP and Defense-MILP are working as expected. One limitation of the approach we have taken is that runtime can still be prohibitive for states with many districts. Additionally districts are a poor representation of voting units since a district has many counties within it, and counties have many voting centers within them. Analyzing group voting at the level of voting centers is far more realistic, though computationally much more porhibitive. Additionally, it is difficult to find voting data at the level of individual voting centers. Counties are also too numerous to be computationally tractable for a project with our computational resources. Future work for this project will include finishing the implementation of the double-oracle approach by completing AO-Better and DO-Better, and implementing our heuristic at the national election level. Finally, we also need to compare the results of our finished work to those produced by Yin et al.
-
-
-\begin{quote}
-\begin{scriptsize}\begin{verbatim}
-%References and End of Paper
-%These lines must be placed at the end of your paper
-\bibliography{Bibliography-File}
-\bibliographystyle{aaai}
-\end{document}
-\end{verbatim}\end{scriptsize}
-\end{quote}
 
 
 
