@@ -52,16 +52,17 @@ def corelp(A, S, t):
 
     model.maximize(p)
 
-    model.print_information()
-    print()
+    # model.print_information()
+    # print()
 
     model.solve()
     
-    print("Objective value: ", model.objective_value)
+    p = model.objective_value
+    # print("Objective value: ", p)
     
-    print()
-    print("Defense values")
-    print()
+    # print()
+    # print("Defense values")
+    # print()
 
     weighted_defense_array = np.zeros(S.shape)
     
@@ -76,9 +77,9 @@ def corelp(A, S, t):
         #print(str(value) + ": " + str(S[j,:]))
     
     
-    print()
-    print("Attack values")
-    print()
+    # print()
+    # print("Attack values")
+    # print()
     
     weighted_attack_array = np.zeros(A.shape)
     
@@ -89,20 +90,20 @@ def corelp(A, S, t):
         weighted_attack_array[k,:] = A[k,:] * y_value
         #print(y_value, ":", A[k,:])
     
-    weighted_defense_vector = np.sum(weighted_defense_array, axis=0)
-    weighted_attack_vector = np.sum(weighted_attack_array, axis=0)
-    
-    
-    print(weighted_defense_vector)
-    print(weighted_attack_vector)
+    # weighted_defense_vector = np.sum(weighted_defense_array, axis=0)
+    # weighted_attack_vector = np.sum(weighted_attack_array, axis=0)
+    #
+    #
+    # print(weighted_defense_vector)
+    # print(weighted_attack_vector)
     
     # print("building E took", time_e)
     #
     # print("lp took", time.time() - start_lp)
     
-    print("full lp took", time.time() - start_program)
+    # print("full lp took", time.time() - start_program)
     
-    return x_vector, y_vector
+    return x_vector, y_vector, p
 
 
 # def corelpsimp(A, t, m):

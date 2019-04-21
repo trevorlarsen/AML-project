@@ -34,7 +34,7 @@ num_to_attack = 5
 
 A = k_bits_on(num_to_attack, n)
 
-x, y = corelp(A, S, t)
+x, y, p = corelp(A, S, t)
 
 best_attack(x, S, t, num_to_attack)
 
