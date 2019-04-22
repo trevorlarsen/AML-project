@@ -60,21 +60,35 @@ oracle_start = time.time()
 x_oracle, a, p_oracle = double_oracle(initial_attacks, initial_defenses, t, num_to_attack, num_to_defend)
 print("oracle time", time.time() - oracle_start)
 print(p_oracle)
+#
+# a = heuristic_attack(initial_defenses, initial_x, p, t, num_to_attack)
+#
+# for i in range(initial_attacks.shape[0]):
+#     if (a == initial_attacks[i,:]).all():
+#         print(initial_attacks[i,:])
+#         print("equal")
+#         break
+#
+# #print(a)
+#
+# if a is not None:
+#     new_initial_attacks = np.vstack((initial_attacks, a))
+#
+#     new_x, new_y, new_p = corelp(new_initial_attacks, initial_defenses, t)
+#     print(new_p)
 
-a = heuristic_attack(initial_defenses, initial_x, p, t, num_to_attack)
-
-for i in range(initial_attacks.shape[0]):
-    if (a == initial_attacks[i,:]).all():
-        print(initial_attacks[i,:])
-        print("equal")
-        break
-
-print(a)
-
-if a is not None:
-    new_initial_attacks = np.vstack((initial_attacks, a))
-
-    new_x, new_y, new_p = corelp(new_initial_attacks, initial_defenses, t)
-    print(new_p)
-
-#s = heuristic_defense(initial_attacks, initial_y, p, t, num_to_defend)
+# s = heuristic_defense(initial_attacks, initial_y, p, t, num_to_defend)
+#
+# for i in range(initial_defenses.shape[0]):
+#     if (s == initial_defenses[i,:]).all():
+#         print(initial_defenses[i,:])
+#         print("equal")
+#         break
+#
+# print(s)
+#
+# if s is not None:
+#     new_initial_defenses = np.vstack((initial_defenses, s))
+#
+#     new_x, new_y, new_p = corelp(initial_attacks, new_initial_defenses, t)
+#     print(new_p)

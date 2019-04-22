@@ -90,8 +90,8 @@ def corelp(A, S, t):
         weighted_attack_array[k,:] = A[k,:] * y_value
         #print(y_value, ":", A[k,:])
     
-    # weighted_defense_vector = np.sum(weighted_defense_array, axis=0)
-    # weighted_attack_vector = np.sum(weighted_attack_array, axis=0)
+    weighted_defense_vector = np.sum(weighted_defense_array, axis=0)
+    weighted_attack_vector = np.sum(weighted_attack_array, axis=0)
     #
     #
     # print(weighted_defense_vector)
@@ -103,7 +103,7 @@ def corelp(A, S, t):
     
     # print("full lp took", time.time() - start_program)
     
-    return x_vector, y_vector, p
+    return x_vector, y_vector, p, weighted_defense_vector
 
 
 # def corelpsimp(A, t, m):
