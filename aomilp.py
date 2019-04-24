@@ -1,5 +1,6 @@
 # # Attack best response to randomized defense
 import time
+import numpy as np
 #
 #
 # # number of districts, i in range(n)
@@ -36,8 +37,6 @@ def best_attack(x, S, t, k):
 
     v = { (i,j) : model.binary_var(name="v_" + str(i) + "_" + str(j)) for i in range(n) for j in range(m) }
 
-
-
     model.add_constraint( model.sum( a[i] for i in range(n)) <= k )
 
     # for j in range(m):
@@ -58,22 +57,29 @@ def best_attack(x, S, t, k):
 
     model.minimize(objective)
 
-    model.print_information()
-    print()
+    # model.print_information()
+    # print()
 
     model.solve()
-
-    print("Objective value: ", model.objective_value, "\n")
-
-    print("Attack group(s):", end=' ')
+        
+    a_return = []
     for i in range(n):
         value = int(a[i])
-        if value:
-            print(i, end=' ')
+        a_return.append(value)
+
+    return np.array(a_return).reshape((1, np.array(a_return).shape[0]))
+
+    # print("Objective value: ", model.objective_value, "\n")
+    #
+    # print("Attack group(s):", end=' ')
+    # for i in range(n):
+    #     value = int(a[i])
+    #     if value:
+    #         print(i, end=' ')
     
-    print("\n")
-    
-    print("aomilp took", time.time() - start_program)
+    # print("\n")
+    #
+    # print("aomilp took", time.time() - start_program)
 
     # for j in range(m):
     #     value = int(z[j])

@@ -1,5 +1,6 @@
 # Defense best response to randomized attack
 import time
+import numpy as np
 
 # # number of districts, i in range(n)
 # n = 3
@@ -60,22 +61,29 @@ def best_defense(y, A, t, l):
 
     model.maximize(objective)
 
-    model.print_information()
-    print()
+    # model.print_information()
+   #  print()
 
     model.solve()
-
-    print("Objective value: ", model.objective_value, "\n")
-
-    print("Defend group(s):", end=' ')
+    
+    s_return = []
     for i in range(n):
         value = int(s[i])
-        if value:
-            print(i, end=' ')
-    
-    print("\n")
-    
-    print("domilp took", time.time() - start_program)
+        s_return.append(value)
+
+    return np.array(s_return).reshape((1, np.array(s_return).shape[0]))
+
+    # print("Objective value: ", model.objective_value, "\n")
+    #
+    # print("Defend group(s):", end=' ')
+    # for i in range(n):
+    #     value = int(s[i])
+    #     if value:
+    #         print(i, end=' ')
+    #
+    # print("\n")
+    #
+    # print("domilp took", time.time() - start_program)
 
     # for j in range(m):
     #     value = int(z[j])
